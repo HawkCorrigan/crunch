@@ -1,34 +1,11 @@
 from .helper import *
 from copy import deepcopy
+from collections import Counter, OrderedDict
+import matplotlib.pylab as plt
+import random
 import wcl
 
-def fight_params_update( self ):
-  def entry_match_fn( id ):
-    return lambda combatant_info: any( [
-      talent.get( 'id' ) == id
-      for talent in [
-          entry
-          for tree in [ 'talentTree', 'talent_tree' ]
-          for entry in combatant_info.get( tree, [] )
-      ]
-    ] )
-
-  players = [
-    f"'{player}'"
-    for player in wcl.getPlayerNameWith( self.params, entry_match_fn( 125020 ) )
-  ]
-  player_names = ', '.join( players )
-  clause_0 = f"(source.name in ({player_names}))"
-
-  clause_2_ids = [ 1, 451839 ]
-  clause_2 = f"(ability.id in ({', '.join((str(x) for x in clause_2_ids))}))"
-
-  clauses = ' or '.join( [
-    clause_2
-  ] )
-  return {
-    'filterExpression': f"{clause_0} and ({clauses})"
-  }
+x = 0
 
 def fmt_timestamp( timestamp ):
   timestamp_s = timestamp // 1000
@@ -36,67 +13,65 @@ def fmt_timestamp( timestamp ):
   timestamp_h = timestamp_m // 60
   return f'{timestamp_h%60:02}:{timestamp_m%60:02}:{timestamp_s%60:02}.{timestamp%1000:03}'
 
+def cb2( self, event):
+  global x 
+  x += 1
+
+
 def cb( self, event ):
-  if event.get( 'sourceID' ) not in self.event_data[ 'info' ].keys():
-    self.event_data[ 'info' ][ event.get( 'sourceID' ) ] = deepcopy( self.event_data[ 'info_base' ] )
 
-  if ( event.get( 'hitType') == 0 ):
-    return
-
-  info = self.event_data[ 'info' ][ event.get( 'sourceID' ) ]
-  if event.get( 'abilityGameID' ) == 1:
-    info[ 'count_since_last' ] += 1
-  if event.get( 'abilityGameID' ) == 1:
-    info[ 'data' ][ info[ 'count_since_last' ] ][ 'failed' ] += 1
-  if event.get( 'abilityGameID' ) == 451839:
-    info[ 'data' ][ info[ 'count_since_last' ] ][ 'successful' ] += 1
-    info[ 'count_since_last' ] = 0
-
-  if False:
+  if True:
+    global x
     print( fmt_timestamp( event.get('timestamp') - self.params['startTime'] ), end=' ' )
     print( event.get( 'sourceID' ), end='\t')
-    if event.get( 'abilityGameID' ) == 1:
-      print( "MELEE", info[ 'count_since_last' ], event.get( 'hitType' ) )
-    if event.get( 'abilityGameID' ) == 451839:
-      print( "DUAL THREAT" )
+    print( x)
+    self.event_data.append(x)
+    x = 0
 
 def probability_at_count( report_codes ):
+  global counter
+  counter = 0
   t = Analyzer(
     report_codes,
     params={
       'limit': 25000,
       # 'filterExpression': "ability.id in (1, 451839) and source.name = 'Jfunk'"
-      'filterExpression': "type='combatantinfo'"
+      'filterExpression': "ability.id in (188389, 77762) and source.name = 'Bloodmallet'"
     },
     callbacks=[
       {
-        'type': 'damage',
-        'abilityGameID': [ 1, 451839 ],
+        'type': 'applybuff',
+        'abilityGameID': [77762],
         'callback': cb
-      }
-    ],
-    event_data={
-      'info_base': {
-        'data': [
-          { 'index': k, 'failed': 0, 'successful': 0 }
-          for k in range(0, 30)
-        ],
-        'count_since_last': 0
       },
-      'info': {}
-    },
-    fight_params_update=fight_params_update
+      { 'type': 'damage',
+        'abilityGameID': [188389],
+        'callback': cb2}
+    ],
+    event_data=[],
   )
 
   import json
   # print(json.dumps( t.data, indent=2))
 
-  m = max( max( [
-    [
-      index[ 'index' ] if index[ 'failed' ] > 0 or index[ 'successful' ] > 0 else 0
-      for _, value in fight[ 'event_data' ][ 'info' ].items()
-      for index in value[ 'data' ]
-    ]
-    for fight in t.data
-  ] ) )
-  print(m)
+  thelist = (sorted(Counter(t.event_data).items()))
+  x, y = zip(*thelist)
+  plt.plot(x,y)
+  plt.show()
+
+#anotherlist = []
+#for i in range (100000):
+#  acc = 0
+#  for j in range (100):
+#   if (random.random()>0.02*(j-16)):
+#    anotherlist.append(j)
+#    break
+#   acc += random.random()/14
+#   if acc >=1:
+#    anotherlist.append(j)
+#    break
+
+#thelist = (sorted(Counter(anotherlist).items()))
+#x, y = zip(*thelist)
+#plt.plot(x,y)
+#plt.show()    
