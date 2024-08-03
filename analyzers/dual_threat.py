@@ -63,14 +63,11 @@ def probability_at_count( report_codes ):
 #for i in range (100000):
 #  acc = 0
 #  for j in range (100):
-#   if (random.random()>0.02*(j-16)):
-#    anotherlist.append(j)
-#    break
 #   acc += random.random()/14
 #   if acc >=1:
 #    anotherlist.append(j)
 #    break
-
+#
 #thelist = (sorted(Counter(anotherlist).items()))
 #x, y = zip(*thelist)
 #plt.plot(x,y)
