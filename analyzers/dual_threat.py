@@ -17,6 +17,10 @@ def cb2( self, event):
   global x 
   x += 1
 
+def cb3( self, event):
+  global x 
+  x -= 1
+
 
 def cb( self, event ):
 
@@ -46,29 +50,34 @@ def probability_at_count( report_codes ):
       },
       { 'type': 'damage',
         'abilityGameID': [188389],
-        'callback': cb2}
+        'callback': cb2},
+      { 'type': 'cast',
+        'abilityGameID': [188389],
+        'callback': cb3}
+        
     ],
     event_data=[],
   )
 
+  def cum(list_of):
+      sum_values = sum(list_of)
+      F = []
+      temp = 0
+      for i in list_of:
+          F.append(i/(sum_values-temp))
+          temp += i
+      return F
+
   import json
   # print(json.dumps( t.data, indent=2))
 
-  thelist = (sorted(Counter(t.event_data).items()))
+  thelist =sorted(Counter(t.event_data).items())
   x, y = zip(*thelist)
+  print("Values:")
+  print((x,y))
+  y = cum(y)
+  print
+  print((x,y))
+  
   plt.plot(x,y)
   plt.show()
-
-#anotherlist = []
-#for i in range (100000):
-#  acc = 0
-#  for j in range (100):
-#   acc += random.random()/14
-#   if acc >=1:
-#    anotherlist.append(j)
-#    break
-#
-#thelist = (sorted(Counter(anotherlist).items()))
-#x, y = zip(*thelist)
-#plt.plot(x,y)
-#plt.show()    
