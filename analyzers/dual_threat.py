@@ -17,10 +17,6 @@ def cb2( self, event):
   global x 
   x += 1
 
-def cb3( self, event):
-  global x 
-  x -= 1
-
 
 def cb( self, event ):
 
@@ -40,20 +36,21 @@ def probability_at_count( report_codes ):
     params={
       'limit': 25000,
       # 'filterExpression': "ability.id in (1, 451839) and source.name = 'Jfunk'"
-      'filterExpression': "ability.id in (188389, 77762) and source.name = 'Bloodmallet'"
+      'filterExpression': "ability.id in (188196, 114051) and source.name = 'Purge'"
     },
     callbacks=[
       {
         'type': 'applybuff',
-        'abilityGameID': [77762],
+        'abilityGameID': [114051],
+        'callback': cb
+      },      {
+        'type': 'refreshbuff',
+        'abilityGameID': [114051],
         'callback': cb
       },
       { 'type': 'damage',
-        'abilityGameID': [188389],
+        'abilityGameID': [188196],
         'callback': cb2},
-      { 'type': 'cast',
-        'abilityGameID': [188389],
-        'callback': cb3}
         
     ],
     event_data=[],
