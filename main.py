@@ -114,7 +114,7 @@ import analyzers
 # ] )
 
 analyzers.dual_threat.probability_at_count( [
-  'bJHLwnBx2kRqPZ6p',
+  '7rRynFMzxgPvNZcY',
 ] )
 
 # analyzers.t31_brew.proc( [

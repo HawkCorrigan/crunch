@@ -15,7 +15,12 @@ def fmt_timestamp( timestamp ):
 
 def cb2( self, event):
   global x 
+  print("1")
   x += 1
+
+def cb3( self, event):
+  global x 
+  x -= 1
 
 
 def cb( self, event ):
@@ -23,10 +28,11 @@ def cb( self, event ):
   if True:
     global x
     print( fmt_timestamp( event.get('timestamp') - self.params['startTime'] ), end=' ' )
-    print( event.get( 'sourceID' ), end='\t')
+    print( end='\t')
     print( x)
-    self.event_data.append(x)
-    x = 0
+    if x!=0:
+      self.event_data.append(x)
+      x = 0
 
 def probability_at_count( report_codes ):
   global counter
@@ -36,21 +42,23 @@ def probability_at_count( report_codes ):
     params={
       'limit': 25000,
       # 'filterExpression': "ability.id in (1, 451839) and source.name = 'Jfunk'"
-      'filterExpression': "ability.id in (188196, 114051) and source.name = 'Purge'"
+      #'filterExpression': "ability.id in (188196, 333957) and source.name = 'Purge'" //LB vs Asc
+      'filterExpression' : "ability.id in (188196, 448862) and source.name = 'Purge'"
     },
     callbacks=[
       {
-        'type': 'applybuff',
-        'abilityGameID': [114051],
+        'type': 'applydebuff',
+        'abilityGameID': [448862],
         'callback': cb
       },      {
-        'type': 'refreshbuff',
-        'abilityGameID': [114051],
+        'type': 'refreshdebuff',
+        'abilityGameID': [448862],
         'callback': cb
       },
       { 'type': 'damage',
         'abilityGameID': [188196],
-        'callback': cb2},
+        'callback': cb2
+        },
         
     ],
     event_data=[],
